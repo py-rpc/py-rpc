@@ -8,6 +8,10 @@ except ImportError:
         from _thread import get_ident
 
 
+def release_local(local):
+    local.__release_local__()
+
+
 class Local(object):
     __slots__ = ('__storage__', '__ident_func__')
 
@@ -46,6 +50,63 @@ class Local(object):
             del self.__storage__[self.__ident_func__()][name]
         except KeyError:
             raise AttributeError(name)
+
+
+class LocalStack(object):
+
+    def __init__(self):
+        self._local = Local()
+
+    def __release_local__(self):
+        self._local.__release_local__()
+
+    @property
+    def __ident_func__(self):
+        return self._local.__ident_func__
+
+    @__ident_func__.setter
+    def __ident_func__(self, value):
+        object.__setattr__(self._local, "__ident_func__", value)
+
+    def __call__(self):
+        def _lookup():
+            rv = self.top
+            if rv is None:
+                raise RuntimeError("object unbound")
+            return rv
+
+        return LocalProxy(_lookup)
+
+    def push(self, obj):
+        """Pushes a new item to the stack"""
+        rv = getattr(self._local, "stack", None)
+        if rv is None:
+            self._local.stack = rv = []
+        rv.append(obj)
+        return rv
+
+    def pop(self):
+        """Removes the topmost item from the stack, will return the
+        old value or `None` if the stack was already empty.
+        """
+        stack = getattr(self._local, "stack", None)
+        if stack is None:
+            return None
+        elif len(stack) == 1:
+            release_local(self._local)
+            return stack[-1]
+        else:
+            return stack.pop()
+
+    @property
+    def top(self):
+        """The topmost item on the stack.  If the stack is empty,
+        `None` is returned.
+        """
+        try:
+            return self._local.stack[-1]
+        except (AttributeError, IndexError):
+            return None
 
 
 class LocalProxy(object):

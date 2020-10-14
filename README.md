@@ -1,23 +1,27 @@
 # py-rpc
 
+[![Fork me on Gitee](https://gitee.com/py-rpc/py-rpc/widgets/widget_3.svg)](https://gitee.com/py-rpc/py-rpc)
+
 #### 介绍
 python的类似flask的rpc框架
 
 #### 软件架构
-软件架构说明
+类似flask的python的rpc框架，具有高扩展、简单、易使用（类似flask）等特性
 
 
 #### 安装教程
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+1.  pip install py-rpc
 
 #### 使用说明
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+1. 像flask一样使用rpc
+2. 使用插件的形式进行扩展
+  - 负载均衡、请求限流和认证方式等
+  - redis、sqlalchemy和apcheduler等第三方的插件，可以线程安全操作
+  - 其他插件可以根据flask插件标准进行编写
+3. 请大家多多支持本项目
+4. 文档地址（暂无，以后补充）
 
 #### 参与贡献
 
